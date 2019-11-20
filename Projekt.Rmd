@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ---
 title: "Projekt"
 author: "Emma"
@@ -6,7 +7,39 @@ output: html_document
 ---
 
 ```{r}
-data = download.file("https://github.com/Horea94/Fruit-Images-Dataset",temp)
-
+setwd("/Users/Emma/OneDrive/Universitetet/9. semester/SDS/M3/fruits-360_dataset/fruits-360/")
 ```
+
+```{r}
+library(keras)
+```
+
+
+```{r}
+train_data_gen = image_data_generator(rescale = 1/255, shear_range = 0.2, zoom_range = 0.2)
+test_datagen = image_data_generator(rescale = 1/255)
+```
+
+
+
+```{r}
+test_images = "/Users/Emma/OneDrive/Universitetet/9. semester/SDS/M3/fruits-360_dataset/fruits-360/Test/"
+
+train_
+
+train_data_gen = image_data_generator(
+  rescale = 1/255)
+
+training_set = flow_images_from_directory(train_images, class_mode = "categorical", classes = list, target_size = target_size, train_data_gen)
+
+list = c("Kiwi", "Banana", "Apricot", "Avocado")
+
+img_width <- 28
+img_height <- 28
+target_size <- c(img_width, img_height)
+
+
+table(factor(training_set$classes))
+```
+
 
