@@ -4,7 +4,7 @@ author: "Emma"
 date: "20 nov 2019"
 output: html_document
 ---
-
+xxxcccffffxxx
 ```{r}
 setwd("/Users/Emma/OneDrive/Universitetet/9. semester/SDS/M3/fruits-360_dataset/fruits-360/")
 ```
