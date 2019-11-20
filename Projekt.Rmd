@@ -33,7 +33,7 @@ training_set = flow_images_from_directory(train_images, class_mode = "categorica
 
 list = c("Kiwi", "Banana", "Apricot", "Avocado")
 
-img_width <- 28
+img_width <- 28+1
 img_height <- 28
 target_size <- c(img_width, img_height)
 
