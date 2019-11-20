@@ -1,0 +1,12 @@
+---
+title: "Projekt"
+author: "Emma"
+date: "20 nov 2019"
+output: html_document
+---
+
+```{r}
+data = download.file("https://github.com/Horea94/Fruit-Images-Dataset",temp)
+
+```
+
