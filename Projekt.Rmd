@@ -94,10 +94,16 @@ test_set <- flow_images_from_directory(test_images,
                                           seed = 123)
 ```
 
-
+We can now explore how many images we have in each of our list of fruits.
 
 ```{r}
 cat("Number of images per class:")
 table(factor(training_set$classes))
 ```
+
+As the table show, there is a nice distrubtion of number of images in every classes. That's good so we dont have a group of classes which is over represented over others classes.
+
+# Defining the model
+
+Now it's time to set up the model, that should be able to predict the images. To start 
 
