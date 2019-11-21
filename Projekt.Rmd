@@ -70,7 +70,8 @@ pacman::p_load(knitr, # For knitr to html
                topicmodels, # LDA models
                broom,
                keras,
-               drat
+               drat,
+               reticulate
                )
 ```
 
@@ -109,7 +110,7 @@ We now want to load our images into the memory and resize them. To do this the '
 
 ```{r}
 #Training images
-training_set <- flow_images_from_directory(train_images,
+training_set = flow_images_from_directory(train_images,
                                           train_data_gen,
                                           target_size = c(224,224),
                                           class_mode = "categorical", 
@@ -117,7 +118,7 @@ training_set <- flow_images_from_directory(train_images,
                                           seed = 123)
 
 #Testing images
-test_set <- flow_images_from_directory(test_images,
+test_set = flow_images_from_directory(test_images,
                                           test_data_gen,
                                           class_mode = "categorical", 
                                           classes = list,
