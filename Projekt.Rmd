@@ -72,17 +72,18 @@ list = c("Kiwi", "Banana", "Apricot", "Avocado", "Cocos", "Clementine", "Mandari
 Then we're using the function "image_data_generator", which can load and generate batches of the image data. Here we're first rescaling the image data. For most image data, the pixel values are integers with values between 0 and 255, which is why dividing the data with 255. This is performed across all channels, regardless of the actual range of pixel values that are present in the images. Here we're also applying zoom range, which is the amount of zoom. We're also rescaling the test data set
 
 ```{r}
-train_data = image_data_generator(rescale = 1/255, zoom_range = 0.2)
+train_data = image_data_generator(rescale = 1/255)
 test_data = image_data_generator(rescale = 1/255)
 ```
 
 
 
 ```{r}
-train_data_gen = image_data_generator(
-  rescale = 1/255)
-
-training_set = flow_images_from_directory(train_images, class_mode = "categorical", classes = list, target_size = target_size, train_data_gen)
+training_set = flow_images_from_directory(train_images, 
+                                          class_mode = "categorical", 
+                                          classes = list, 
+                                          target_size = target_size, 
+                                          train_data_gen)
 
 list = c("Kiwi", "Banana", "Apricot", "Avocado")
 
