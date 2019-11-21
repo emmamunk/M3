@@ -89,7 +89,7 @@ test_images = "/Users/Emma/OneDrive/Universitetet/9. semester/SDS/M3/fruits-360_
 ```{r}
 train_image_files_path = "C:/Users/Michael Thomsen/Desktop/fruits-360_dataset/fruits-360/Training/"
 
-test_image_files_path = "C:/Users/Michael Thomsen/Desktop/fruits-360_dataset/fruits-360/Test/"
+valid_image_files_path = "C:/Users/Michael Thomsen/Desktop/fruits-360_dataset/fruits-360/Test/"
 ```
 
 
@@ -119,16 +119,16 @@ We now want to load our images into the memory and resize them. To do this the '
 train_image_array_gen = flow_images_from_directory(train_image_files_path,
                                           train_data_gen,
                                           target_size = target_size,
-                                          class_mode = "categorical", 
+                                          class_mode = 'categorical', 
                                           classes = fruit_list,
-                                          seed = 123)
+                                          seed = 42)
 
 #Testing images
-valid_image_array_gen = flow_images_from_directory(test_image_files_path,
+valid_image_array_gen = flow_images_from_directory(valid_image_files_path,
                                           valid_data_gen,
-                                          class_mode = "categorical", 
+                                          class_mode = 'categorical', 
                                           classes = fruit_list,
-                                          seed = 123)
+                                          seed = 42)
 ```
 
 We can now explore how many images we have in each of our list of fruits.
@@ -154,8 +154,8 @@ train_samples <- train_image_array_gen$n
 #Testing set
 valid_samples <- valid_image_array_gen$n
 
-batch_size <- 4
-epochs <- 3
+batch_size <- 32
+epochs <- 10
 ```
 
 We are now ready for creating a model. We'll start of with a simple Convolutional Neural Net (CNN) model. It will contain the following layers: 2 Convolutional, 1 Pooling and 1 Dense.
@@ -164,45 +164,38 @@ The first thing is to use the 'keras_model_sequential' function which allows us 
 ```{r}
 model <- keras_model_sequential()
   
-
 model %>% 
-  layer_conv_2d(filters = 32, kernel_size = c(3,3),padding = "same", input_shape = c(img_width, img_height, channels)) %>% 
-  layer_activation("relu") %>% 
-  layer_conv_2d(filters = 16, kernel_size = c(3,3), padding = "same") %>% 
-  layer_activation_leaky_relu(0.5) %>% 
-  layer_batch_normalization() %>% 
-  layer_max_pooling_2d(pool_size = c(2,2)) %>% 
-  layer_dropout(0.25) %>% 
-  layer_flatten() %>% 
-  layer_dense(100) %>% 
-  layer_activation("relu") %>% 
-  layer_dropout(0.5) %>% 
+  layer_conv_2d(filter = 32, kernel_size = c(3,3), padding = 'same', input_shape = c(img_width, img_height, channels)) %>%
+  layer_activation('relu') %>%
+  layer_conv_2d(filter = 16, kernel_size = c(3,3), padding = 'same') %>%
+  layer_activation_leaky_relu(0.5) %>%
+  layer_batch_normalization() %>%
+  layer_max_pooling_2d(pool_size = c(2,2)) %>%
+  layer_dropout(0.25) %>%
+  layer_flatten() %>%
+  layer_dense(100) %>%
+  layer_activation('relu') %>%
+  layer_dropout(0.5) %>%
   layer_dense(output_n) %>% 
-  layer_activation("softmax")
+  layer_activation('softmax')
 ```
 
 ```{r}
+# compile
 model %>% compile(
-  loss = "categorical_crossentropy",
+  loss = 'categorical_crossentropy',
   optimizer = optimizer_rmsprop(lr = 0.0001, decay = 1e-6),
-  metrics = "accuracy")
-
+  metrics = 'accuracy'
+)
 ```
 
 ```{r}
 hist <- fit_generator(
   train_image_array_gen,
-  steps_per_epoch = as.integer(train_samples / batch_size),
+  steps_per_epoch = as.integer(train_samples / batch_size), 
   epochs = epochs,
   validation_data = valid_image_array_gen,
-  validation_steps = as.integer(valid_samples / batch_size),
-  verbose = 2,
-  callbacks = list(
-    callback_model_checkpoint(file.path(path,"fruits_checkpoints.h5"),save_best_only = TRUE),
-    callback_tensorboard(log_dir = file.path(path, "fruit_logs"))
-  )
-)
-
+  validation_steps = as.integer(valid_samples / batch_size))
 ```
 
 
