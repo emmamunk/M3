@@ -23,7 +23,11 @@ rm(list=ls())
 And then we'll import Keras, which is essential for the anaysis. You have to use "install_keras" if you're installing Keras for the first time.
 
 ```{r}
+<<<<<<< HEAD
 devtools::install_github("rstudio/keras", force = TRUE)
+=======
+devtools::install_github("rstudio/keras")
+>>>>>>> parent of a87f406... Update Projekt.Rmd
 library(keras)
 #install_keras()
 ```
