@@ -23,8 +23,8 @@ rm(list=ls())
 And then we'll import Keras, which is essential for the anaysis. You have to use "install_keras" if you're installing Keras for the first time.
 
 ```{r}
-devtools::install_github("rstudio/keras")
-library(keras)
+#devtools::install_github("rstudio/keras")
+#library(keras)
 #install_keras()
 ```
 
