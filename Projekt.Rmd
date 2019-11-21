@@ -8,7 +8,7 @@ output: html_document
 
 In this project, we are focusing on dealing with image classification, which refers to a process in computer vision that can classify an image according to its visual content. Over the last years, it has grown effective due to it using deep learning. Deep learning is a class of machine learning that uses multiple layers to extract higher level features. Some expamples on its usage are Face Recognition on social platforms like Facebook or Product Discoverability which allows consumers to search for similar images or products.  
 
-In this project we're making a guide on image classification in R. We're working with the Fruit data set from Kaggle, found on https://www.kaggle.com/moltean/fruits/data. Here 120 different fruits and vegetables are stored in different classes. The data set has 82213 images of fruit ans vegetables. The data set is split into a training set containing 61488 images and a test set containing 20622 images. The images sizes are 100x100 pixels. 
+In this project we're making a guide on image classification in R. We're working with the Fruit data set from Kaggle, found on https://www.kaggle.com/moltean/fruits/data. Here 120 different fruits and vegetables are stored in different classes. The data set has 82213 images of fruit and vegetables. The data set is split into a training set containing 61488 images and a test set containing 20622 images. The images sizes are 100x100 pixels. 
 
 In the data set there was a difference in lighting conditions, the background was not uniform and beforehand there has been written a dedicated algorithm which extracts the fruit from the background, so the fruit and vegetables are seen on the images with a white background.
 
