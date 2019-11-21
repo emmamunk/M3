@@ -70,8 +70,7 @@ pacman::p_load(knitr, # For knitr to html
                topicmodels, # LDA models
                broom,
                keras,
-               drat,
-               cerat
+               drat
                )
 ```
 
