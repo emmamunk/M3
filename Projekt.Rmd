@@ -112,7 +112,7 @@ We now want to load our images into the memory and resize them. To do this the '
 #Training images
 training_set = flow_images_from_directory(train_images,
                                           train_data_gen,
-                                          target_size = c(224,224,3),
+                                          target_size = c(224,224),
                                           class_mode = "categorical", 
                                           classes = fruit_list,
                                           seed = 123)
@@ -147,50 +147,28 @@ The batch size indicates the number of sequences to look at one at time during t
 train_samples <- training_set$n
 #Testing set
 test_samples <- test_set$n
-
-batch_size <- 64
-epochs <- 3
 ```
 
 We are now ready for creating a model. We'll start of with a simple Convolutional Neural Net (CNN) model. It will contain the following layers: 2 Convolutional, 1 Pooling and 1 Dense.
 The first thing is to use the 'keras_model_sequential' function which allows us to composing a model with diffrent kind of linear layers.
 
 ```{r}
-# initialise model
-model <- keras_model_sequential()
-fruit_list <- as.String(fruit_list)
-# add layers
-model %>%
-  layer_conv_2d(filter = 32, kernel_size = c(3,3), padding = "same") %>%
-  layer_activation("relu") %>%
-  
-  # Second hidden layer
-  layer_conv_2d(filter = 16, kernel_size = c(3,3), padding = "same") %>%
-  layer_activation_leaky_relu(0.5) %>%
-  layer_batch_normalization() %>%
+model <- keras_model_sequential() %>% 
+  layer_embedding()
+```
 
-  # Use max pooling
-  layer_max_pooling_2d(pool_size = c(2,2)) %>%
-  layer_dropout(0.25) %>%
-  
-  # Flatten max filtered output into feature vector 
-  # and feed into dense layer
-  layer_flatten() %>%
-  layer_dense(100) %>%
-  layer_activation("relu") %>%
-  layer_dropout(0.5) 
-# compile
+```{r}
 model %>% compile(
   loss = "categorical_crossentropy",
-  optimizer = optimizer_rmsprop(lr = 0.0001, decay = 1e-6),
-  metrics = "accuracy"
-)
+  optimizer = "rmsprop",
+  metrics = "accuracy")
+
 ```
 
 ```{r}
 
-```
 
+```
 
 
 # Pretrained model
@@ -240,9 +218,9 @@ model %>% compile(
 history = model %>% fit_generator(
   training_set,
   epochs = epochs,
-  steps_per_epoch = 10,
+  steps_per_epoch = 2,
   validation_data = test_set,
-  validation_steps = 10
+  validation_steps = 2
 )
 ```
 
