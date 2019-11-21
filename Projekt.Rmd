@@ -13,7 +13,7 @@ In this project we're making a guide on image classification in R. We're working
 In the data set there was a difference in lighting conditions, the background was not uniform and beforehand there has been written a dedicated algorithm which extracts the fruit from the background, so the fruit and vegetables are seen on the images with a white background.
 
 ## Load the data
-We start by cleaning the environment. 
+We start by cleaning the global environment. 
 
 ```{r}
 #Cleaning the environment
@@ -55,6 +55,13 @@ train_images = "/Users/Emma/OneDrive/Universitetet/9. semester/SDS/M3/fruits-360
 
 test_images = "/Users/Emma/OneDrive/Universitetet/9. semester/SDS/M3/fruits-360_dataset/fruits-360/Test/"
 ```
+
+```{r}
+#train_images = "C:/Users/Michael Thomsen/Desktop/fruits-360_dataset/fruits-360/Training/"
+
+#test_images = "C:/Users/Michael Thomsen/Desktop/fruits-360_dataset/fruits-360/Test/"
+```
+
 
 Then we need to define a vector of the fruits and vegetables we want to train our model to classify, as we're not going to train it to classify 120.
 
