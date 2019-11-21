@@ -32,16 +32,46 @@ And then we'll load a bunch of other packages.
 
 ```{r, include=FALSE}
 #Loading packages
-if (!require("pacman")) install.packages("pacman")
-pacman::p_load(tidyverse, 
-               magrittr,
-               tidytext,
-               tm,
-               readr,
-               topicmodels,
+if (!require("pacman")) install.packages("pacman") # package for loading and checking packages :)
+pacman::p_load(knitr, # For knitr to html
+               rmarkdown, # For formatting the document
+               tidyverse, # Standard datasciewnce toolkid (dplyr, ggplot2 et al.)
+               data.table, # for reading in data ect. 
+               magrittr,# For advanced piping (%>% et al.)
+               igraph, # For network analysis
+               tidygraph, # For tidy-style graph manipulation
+               ggraph, # For ggplot2 style graph plotting
+               Matrix, # For some matrix functionality
+               ggforce, # Awesome plotting
+               kableExtra, # Formatting for tables
+               car, # recode functions 
+               tidytext, # Structure text within tidyverse
+               topicmodels, # For topic modelling
+               tm, # text mining library
+               quanteda, # for LSA (latent semantic analysis)
+               uwot, # for UMAP
+               dbscan, # for density based clustering
+               SnowballC,
+               textdata,
+               wordcloud, 
+               textstem, # for textstemming 
+               tidyr,
+               widyr,
+               reshape2,
+               quanteda,
+               uwot,
+               dbscan,
+               plotly,
                rsample,
                glmnet,
-               SnowballC
+               broom,
+               yardstick,
+               lda, # For LDA-analysis
+               topicmodels, # LDA models
+               broom,
+               keras,
+               drat,
+               cerat
                )
 ```
 
@@ -57,9 +87,9 @@ test_images = "/Users/Emma/OneDrive/Universitetet/9. semester/SDS/M3/fruits-360_
 ```
 
 ```{r}
-#train_images = "C:/Users/Michael Thomsen/Desktop/fruits-360_dataset/fruits-360/Training/"
+train_images = "C:/Users/Michael Thomsen/Desktop/fruits-360_dataset/fruits-360/Training/"
 
-#test_images = "C:/Users/Michael Thomsen/Desktop/fruits-360_dataset/fruits-360/Test/"
+test_images = "C:/Users/Michael Thomsen/Desktop/fruits-360_dataset/fruits-360/Test/"
 ```
 
 
@@ -125,38 +155,35 @@ We are now ready for creating a model. We'll start of with a simple Convolutiona
 The first thing is to use the 'keras_model_sequential' function which allows us to composing a model with diffrent kind of linear layers.
 
 ```{r}
-model <- keras_model_sequential() 
-
-model %>% 
-  layer_conv_2d(filter=32,kernel_size=c(3,3),padding="same",                input_shape=c(32,32,3) ) %>%  
-layer_activation("relu") %>%  
-#another 2-D convolution layer
-  
-layer_conv_2d(filter=32 ,kernel_size=c(3,3))  %>%  layer_activation("relu") %>%
-#Defining a Pooling layer which reduces the dimentions of the #features map and reduces the computational complexity of the model
-layer_max_pooling_2d(pool_size=c(2,2)) %>%  
-#dropout layer to avoid overfitting
-layer_dropout(0.25) %>%
-layer_conv_2d(filter=32 , kernel_size=c(3,3),padding="same") %>% layer_activation("relu") %>%  layer_conv_2d(filter=32,kernel_size=c(3,3) ) %>%  layer_activation("relu") %>%  
-layer_max_pooling_2d(pool_size=c(2,2)) %>%  
-layer_dropout(0.25) %>%
-#flatten the input  
-layer_flatten() %>%  
-layer_dense(512) %>%  
-layer_activation("relu") %>%  
-layer_dropout(0.5) %>%  
-#output layer-10 classes-10 units  
-layer_dense(10) %>%  
-#applying softmax nonlinear activation function to the output layer #to calculate cross-entropy  
-layer_activation("softmax") 
-
-
+# initialise model
+model <- keras_model_sequential()
+fruit_list <- as.String(fruit_list)
+# add layers
 model %>%
- compile(loss="categorical_crossentropy",
- optimizer="rmsprop",
- metrics = "accuracy")
+  layer_conv_2d(filter = 32, kernel_size = c(3,3), padding = "same") %>%
+  layer_activation("relu") %>%
+  
+  # Second hidden layer
+  layer_conv_2d(filter = 16, kernel_size = c(3,3), padding = "same") %>%
+  layer_activation_leaky_relu(0.5) %>%
+  layer_batch_normalization() %>%
 
-summary(model)
+  # Use max pooling
+  layer_max_pooling_2d(pool_size = c(2,2)) %>%
+  layer_dropout(0.25) %>%
+  
+  # Flatten max filtered output into feature vector 
+  # and feed into dense layer
+  layer_flatten() %>%
+  layer_dense(100) %>%
+  layer_activation("relu") %>%
+  layer_dropout(0.5) 
+# compile
+#model %>% compile(
+ # loss = "categorical_crossentropy",
+  #optimizer = optimizer_rmsprop(lr = 0.0001, decay = 1e-6),
+  #metrics = "accuracy"
+#)
 ```
 
 ```{r}
