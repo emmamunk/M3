@@ -87,9 +87,9 @@ test_images = "/Users/Emma/OneDrive/Universitetet/9. semester/SDS/M3/fruits-360_
 ```
 
 ```{r}
-train_images = "C:/Users/Michael Thomsen/Desktop/fruits-360_dataset/fruits-360/Training/"
+train_image_files_path = "C:/Users/Michael Thomsen/Desktop/fruits-360_dataset/fruits-360/Training/"
 
-test_images = "C:/Users/Michael Thomsen/Desktop/fruits-360_dataset/fruits-360/Test/"
+test_image_files_path = "C:/Users/Michael Thomsen/Desktop/fruits-360_dataset/fruits-360/Test/"
 ```
 
 
@@ -97,29 +97,35 @@ Then we need to define a vector of the fruits and vegetables we want to train ou
 
 ```{r}
 fruit_list = c("Kiwi", "Banana", "Apricot", "Avocado", "Cocos", "Clementine", "Mandarine", "Orange", "Limes", "Lemon", "Peach", "Plum", "Raspberry", "Strawberry", "Pineapple", "Pomegranate")
+output_n <- length(fruit_list)
+img_width <- 20
+img_height <- 20
+target_size <- c(img_width, img_height)
+channels <- 3
+
 ```
 
 Then we're using the function "image_data_generator", which can load and generate batches of the image data. Here we're first rescaling the image data. For most image data, the pixel values are integers with values between 0 and 255, which is why dividing the data with 255. This is performed across all channels, regardless of the actual range of pixel values that are present in the images. Here we're also applying zoom range, which is the amount of zoom. We're also rescaling the test data set
 
 ```{r}
-train_data_gen <- image_data_generator(rescale = 1/255)
-test_data_gen <- image_data_generator(rescale = 1/255)
+train_data_gen <-  image_data_generator(rescale = 1/255)
+valid_data_gen <-  image_data_generator(rescale = 1/255)
 ```
 
 We now want to load our images into the memory and resize them. To do this the 'flow_images_from_directory' function from the Keras package will come in use. It allows us to generate batches of data from images in a directory. We start by setting the 'class_mode' to categorical, due to the data list we created earlier. The same applies for the which 'classes', we are refering back to. At last we the set the seed to 123, as it allows us to reproduce the same results later.
 
 ```{r}
 #Training images
-training_set = flow_images_from_directory(train_images,
+train_image_array_gen = flow_images_from_directory(train_image_files_path,
                                           train_data_gen,
-                                          target_size = c(224,224),
+                                          target_size = target_size,
                                           class_mode = "categorical", 
                                           classes = fruit_list,
                                           seed = 123)
 
 #Testing images
-test_set = flow_images_from_directory(test_images,
-                                          test_data_gen,
+valid_image_array_gen = flow_images_from_directory(test_image_files_path,
+                                          valid_data_gen,
                                           class_mode = "categorical", 
                                           classes = fruit_list,
                                           seed = 123)
@@ -129,7 +135,7 @@ We can now explore how many images we have in each of our list of fruits.
 
 ```{r}
 cat("Number of images per class:")
-table(factor(training_set$classes))
+table(factor(train_image_array_gen$classes))
 ```
 
 As the table show, there is a nice distrubtion of number of images in every classes. That's good so we dont have a group of classes which is over represented over others classes.
@@ -144,29 +150,58 @@ The batch size indicates the number of sequences to look at one at time during t
 
 ```{r}
 #Training set
-train_samples <- training_set$n
+train_samples <- train_image_array_gen$n
 #Testing set
-test_samples <- test_set$n
+valid_samples <- valid_image_array_gen$n
+
+batch_size <- 4
+epochs <- 3
 ```
 
 We are now ready for creating a model. We'll start of with a simple Convolutional Neural Net (CNN) model. It will contain the following layers: 2 Convolutional, 1 Pooling and 1 Dense.
 The first thing is to use the 'keras_model_sequential' function which allows us to composing a model with diffrent kind of linear layers.
 
 ```{r}
-model <- keras_model_sequential() %>% 
-  layer_embedding()
+model <- keras_model_sequential()
+  
+
+model %>% 
+  layer_conv_2d(filters = 32, kernel_size = c(3,3),padding = "same", input_shape = c(img_width, img_height, channels)) %>% 
+  layer_activation("relu") %>% 
+  layer_conv_2d(filters = 16, kernel_size = c(3,3), padding = "same") %>% 
+  layer_activation_leaky_relu(0.5) %>% 
+  layer_batch_normalization() %>% 
+  layer_max_pooling_2d(pool_size = c(2,2)) %>% 
+  layer_dropout(0.25) %>% 
+  layer_flatten() %>% 
+  layer_dense(100) %>% 
+  layer_activation("relu") %>% 
+  layer_dropout(0.5) %>% 
+  layer_dense(output_n) %>% 
+  layer_activation("softmax")
 ```
 
 ```{r}
 model %>% compile(
   loss = "categorical_crossentropy",
-  optimizer = "rmsprop",
+  optimizer = optimizer_rmsprop(lr = 0.0001, decay = 1e-6),
   metrics = "accuracy")
 
 ```
 
 ```{r}
-
+hist <- fit_generator(
+  train_image_array_gen,
+  steps_per_epoch = as.integer(train_samples / batch_size),
+  epochs = epochs,
+  validation_data = valid_image_array_gen,
+  validation_steps = as.integer(valid_samples / batch_size),
+  verbose = 2,
+  callbacks = list(
+    callback_model_checkpoint(file.path(path,"fruits_checkpoints.h5"),save_best_only = TRUE),
+    callback_tensorboard(log_dir = file.path(path, "fruit_logs"))
+  )
+)
 
 ```
 
