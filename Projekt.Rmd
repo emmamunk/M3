@@ -149,7 +149,7 @@ train_samples <- training_set$n
 test_samples <- test_set$n
 
 batch_size <- 64
-epochs <- 10
+epochs <- 3
 ```
 
 We are now ready for creating a model. We'll start of with a simple Convolutional Neural Net (CNN) model. It will contain the following layers: 2 Convolutional, 1 Pooling and 1 Dense.
@@ -180,11 +180,11 @@ model %>%
   layer_activation("relu") %>%
   layer_dropout(0.5) 
 # compile
-#model %>% compile(
- # loss = "categorical_crossentropy",
-  #optimizer = optimizer_rmsprop(lr = 0.0001, decay = 1e-6),
-  #metrics = "accuracy"
-#)
+model %>% compile(
+  loss = "categorical_crossentropy",
+  optimizer = optimizer_rmsprop(lr = 0.0001, decay = 1e-6),
+  metrics = "accuracy"
+)
 ```
 
 ```{r}
@@ -239,10 +239,10 @@ model %>% compile(
 ```{r}
 history = model %>% fit_generator(
   training_set,
-  epochs = 10,
-  steps_per_epoch = 100,
+  epochs = epochs,
+  steps_per_epoch = 10,
   validation_data = test_set,
-  validation_steps = 100
+  validation_steps = 10
 )
 ```
 
