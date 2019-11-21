@@ -23,11 +23,7 @@ rm(list=ls())
 And then we'll import Keras, which is essential for the anaysis. You have to use "install_keras" if you're installing Keras for the first time.
 
 ```{r}
-<<<<<<< HEAD
 devtools::install_github("rstudio/keras", force = TRUE)
-=======
-devtools::install_github("rstudio/keras")
->>>>>>> parent of a87f406... Update Projekt.Rmd
 library(keras)
 #install_keras()
 ```
@@ -118,14 +114,14 @@ training_set = flow_images_from_directory(train_images,
                                           train_data_gen,
                                           target_size = c(224,224),
                                           class_mode = "categorical", 
-                                          classes = list,
+                                          classes = fruit_list,
                                           seed = 123)
 
 #Testing images
 test_set = flow_images_from_directory(test_images,
                                           test_data_gen,
                                           class_mode = "categorical", 
-                                          classes = list,
+                                          classes = fruit_list,
                                           seed = 123)
 ```
 
