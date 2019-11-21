@@ -23,8 +23,8 @@ rm(list=ls())
 And then we'll import Keras, which is essential for the anaysis. You have to use "install_keras" if you're installing Keras for the first time.
 
 ```{r}
-devtools::install_github("rstudio/keras")
-library(keras)
+#devtools::install_github("rstudio/keras")
+#library(keras)
 #install_keras()
 ```
 
@@ -32,16 +32,46 @@ And then we'll load a bunch of other packages.
 
 ```{r, include=FALSE}
 #Loading packages
-if (!require("pacman")) install.packages("pacman")
-pacman::p_load(tidyverse, 
-               magrittr,
-               tidytext,
-               tm,
-               readr,
-               topicmodels,
+if (!require("pacman")) install.packages("pacman") # package for loading and checking packages :)
+pacman::p_load(knitr, # For knitr to html
+               rmarkdown, # For formatting the document
+               tidyverse, # Standard datasciewnce toolkid (dplyr, ggplot2 et al.)
+               data.table, # for reading in data ect. 
+               magrittr,# For advanced piping (%>% et al.)
+               igraph, # For network analysis
+               tidygraph, # For tidy-style graph manipulation
+               ggraph, # For ggplot2 style graph plotting
+               Matrix, # For some matrix functionality
+               ggforce, # Awesome plotting
+               kableExtra, # Formatting for tables
+               car, # recode functions 
+               tidytext, # Structure text within tidyverse
+               topicmodels, # For topic modelling
+               tm, # text mining library
+               quanteda, # for LSA (latent semantic analysis)
+               uwot, # for UMAP
+               dbscan, # for density based clustering
+               SnowballC,
+               textdata,
+               wordcloud, 
+               textstem, # for textstemming 
+               tidyr,
+               widyr,
+               reshape2,
+               quanteda,
+               uwot,
+               dbscan,
+               plotly,
                rsample,
                glmnet,
-               SnowballC
+               broom,
+               yardstick,
+               lda, # For LDA-analysis
+               topicmodels, # LDA models
+               broom,
+               keras,
+               drat,
+               cerat
                )
 ```
 
@@ -57,16 +87,16 @@ test_images = "/Users/Emma/OneDrive/Universitetet/9. semester/SDS/M3/fruits-360_
 ```
 
 ```{r}
-#train_images = "C:/Users/Michael Thomsen/Desktop/fruits-360_dataset/fruits-360/Training/"
+train_images = "C:/Users/Michael Thomsen/Desktop/fruits-360_dataset/fruits-360/Training/"
 
-#test_images = "C:/Users/Michael Thomsen/Desktop/fruits-360_dataset/fruits-360/Test/"
+test_images = "C:/Users/Michael Thomsen/Desktop/fruits-360_dataset/fruits-360/Test/"
 ```
 
 
 Then we need to define a vector of the fruits and vegetables we want to train our model to classify, as we're not going to train it to classify 120.
 
 ```{r}
-list = c("Kiwi", "Banana", "Apricot", "Avocado", "Cocos", "Clementine", "Mandarine", "Orange", "Limes", "Lemon", "Peach", "Plum", "Raspberry", "Strawberry", "Pineapple", "Pomegranate")
+fruit_list = c("Kiwi", "Banana", "Apricot", "Avocado", "Cocos", "Clementine", "Mandarine", "Orange", "Limes", "Lemon", "Peach", "Plum", "Raspberry", "Strawberry", "Pineapple", "Pomegranate")
 ```
 
 Then we're using the function "image_data_generator", which can load and generate batches of the image data. Here we're first rescaling the image data. For most image data, the pixel values are integers with values between 0 and 255, which is why dividing the data with 255. This is performed across all channels, regardless of the actual range of pixel values that are present in the images. Here we're also applying zoom range, which is the amount of zoom. We're also rescaling the test data set
@@ -106,7 +136,60 @@ As the table show, there is a nice distrubtion of number of images in every clas
 
 # Defining the model
 
-Now it's time to set up the model, that should be able to predict the images. To start 
+Now it's time to set up the model, that should be able to predict the images. To start of we will define the number of training and testing samples, aswell as the batch_size and epochs.
+##Epochs
+The number of epochs for training indicates, which amount of times the the model will expose itself to the whole training set.
+##Batch size
+The batch size indicates the number of sequences to look at one at time during training. It's advice to do choose the number that matches with the power of two, due to then you train the model on the GPU.
+
+```{r}
+#Training set
+train_samples <- training_set$n
+#Testing set
+test_samples <- test_set$n
+
+batch_size <- 64
+epochs <- 10
+```
+
+We are now ready for creating a model. We'll start of with a simple Convolutional Neural Net (CNN) model. It will contain the following layers: 2 Convolutional, 1 Pooling and 1 Dense.
+The first thing is to use the 'keras_model_sequential' function which allows us to composing a model with diffrent kind of linear layers.
+
+```{r}
+# initialise model
+model <- keras_model_sequential()
+fruit_list <- as.String(fruit_list)
+# add layers
+model %>%
+  layer_conv_2d(filter = 32, kernel_size = c(3,3), padding = "same") %>%
+  layer_activation("relu") %>%
+  
+  # Second hidden layer
+  layer_conv_2d(filter = 16, kernel_size = c(3,3), padding = "same") %>%
+  layer_activation_leaky_relu(0.5) %>%
+  layer_batch_normalization() %>%
+
+  # Use max pooling
+  layer_max_pooling_2d(pool_size = c(2,2)) %>%
+  layer_dropout(0.25) %>%
+  
+  # Flatten max filtered output into feature vector 
+  # and feed into dense layer
+  layer_flatten() %>%
+  layer_dense(100) %>%
+  layer_activation("relu") %>%
+  layer_dropout(0.5) 
+# compile
+#model %>% compile(
+ # loss = "categorical_crossentropy",
+  #optimizer = optimizer_rmsprop(lr = 0.0001, decay = 1e-6),
+  #metrics = "accuracy"
+#)
+```
+
+```{r}
+
+```
 
 
 
