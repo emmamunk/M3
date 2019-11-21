@@ -79,10 +79,6 @@ test_data = image_data_generator(rescale = 1/255)
 
 
 ```{r}
-
-
-train_
-
 train_data_gen = image_data_generator(
   rescale = 1/255)
 
@@ -90,7 +86,7 @@ training_set = flow_images_from_directory(train_images, class_mode = "categorica
 
 list = c("Kiwi", "Banana", "Apricot", "Avocado")
 
-img_width <- 28+1
+img_width <- 28
 img_height <- 28
 target_size <- c(img_width, img_height)
 
