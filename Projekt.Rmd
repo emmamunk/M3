@@ -3,16 +3,15 @@ title: "Projekt"
 date: "20 nov 2019"
 output: html_document
 ---
-# Comparing trained and pretrained on Image Classification
+# Comparing trained and pretrained models on Image Classification for multiple classes
 
 ## Image classification for multiple classes
 
 In this project, we are focusing on dealing with image classification, which refers to a process in computer vision that can classify an image according to its visual content. Over the last years, it has grown effective due to it using deep learning. Deep learning is a class of machine learning that uses multiple layers to extract higher level features. Some expamples on its usage are Face Recognition on social platforms like Facebook or Product Discoverability which allows consumers to search for similar images or products.  
 
-  
+Keras has 10 pretrained models, for example VGG19 and ResNet50, which are trained on ImageNet, a large collection of images in 1000 classes, and the pretrained models should be able to classify an image that falls into any of these 1000 classes. An image classifier contains convolutional and classifier layers. The convolutional layers extract features and classifier layers classify them using these features. Pretrained models already know how to extract features, and therefore you don't need to train it from scratch. 
 
-
-Keras has 10 pretrained models, for example VGG16 and ResNet50, which are trained on ImageNet, a large collection of images in 1000 classes. An image classifier contains convolutional and fully conncted layers. The convolutional layers extract features and fully conncted classify them using the features. 
+We have choosen to work with one of the simpler pretrained models, here the VGG19 model, but you can easily use different models from the Keras library as the procedure is the same. The VGG19 model is a 
 
 ## The data set
 In this project we're making a guide on image classification in R. We're working with the Fruit data set from Kaggle, found on https://www.kaggle.com/moltean/fruits/data. Here 120 different fruits and vegetables are stored in different classes. The data set has 82213 images of fruit and vegetables. The data set is split into a training set containing 61488 images and a test set containing 20622 images. The images sizes are 100x100 pixels. 
@@ -88,7 +87,7 @@ pacman::p_load(knitr, # For knitr to html
 
 ### Preprocessing 
 
-And then we can load the data the data from Kaggle. We just loaded it locally
+And then we can load the data the data from Kaggle. We just loaded it locally, downloading and unpacking it from Kaggle.
 
 ```{r}
 train_images = "/Users/Emma/OneDrive/Universitetet/9. semester/SDS/M3/fruits-360_dataset/fruits-360/Training/"
@@ -195,7 +194,7 @@ hist <- model %>% fit_generator(train_image_array,
                                 steps_per_epoch = 100, 
                                 epochs = 10, 
                                 validation_data = test_image_array,
-  validation_steps = 100
+                                validation_steps = 100
 )
 
 ```
@@ -209,13 +208,11 @@ As shown above the model performed really well. Where the average accuracy is fo
 
 
 # Pretrained model
-In this example, we would use a pretrained model to see how it compares to our own model. You have easily access to pretrained model, in R you simply have to write "application_" and then 10 pretrained models will show. 
-
-We're using a sequential model, which is a linear stack of layers. First we start by loading the pretrained model. Here there's a lot of options for the model. Here we can apply weights to the ImageNet images. 
+In this example, we would use a pretrained model to see how it compares to our own model. 
 
 ## Setting up your own pretrained model from Keras
 
-1. Choose pretrained model and loading it using "application_"
+1. Choose pretrained model and load it using "application_"
 2. Choose if you want to freeze any layers
 3. Trainsform model into sequational or xxx data
 4. Add layers if wanted
@@ -224,19 +221,24 @@ We're using a sequential model, which is a linear stack of layers. First we star
 
 ## An example
 
+You have easily access to pretrained model, in R you simply have to write "application_" and then 10 pretrained models will show, amongst other models also the VGG16 model.
+
+We're using a sequential model, which is a linear stack of layers. First we start by loading the pretrained model. Here there's a lot of options for the model. Here we can apply weights to the ImageNet images. 
+
 ```{r}
-resnet50 = keras::application_vgg19(include_top = FALSE,
+vgg19 = keras::application_vgg19(include_top = FALSE,
                                        weights = 'imagenet', 
                                        input_shape = c(64, 64 ,3))
 ```
 
-Then you have the possibility to freeze layers. When a layer is frozen, its weights are frozen as well while training. If your current dataset is similar to the one it was freezed on, then it's good to freeze it, otherwise you can train the bottom layers. 
+Then you have the possibility to freeze layers. When a layer is frozen, its weights are frozen as well while training. If your current dataset is similar to the one it was freezed on, then it's good to freeze it, otherwise you can train the bottom layers. Here
 
 ```{r}
 resnet501 = resnet50
 resnet501 %>% freeze_weights(from = 1, to = 20)
 ```
 
+Then 
 
 ```{r}
 model = keras_model_sequential(resnet501)
@@ -261,7 +263,7 @@ model2 %>% compile(
 )
 ```
 
-
+Now we run the model. 
 
 ```{r}
 history = model2 %>% fit_generator(
@@ -273,11 +275,23 @@ history = model2 %>% fit_generator(
 )
 ```
 
+```{r}
+history$metrics
+```
+
+```{r}
+mean(history$metrics$accuracy)
+mean(history$metrics$val_accuracy)
+```
+
+
+Here the valuation accuracy is between 0.90 and 0.94, which is quiet high and higher than our own trained model.
+
 ## Why does the pretrained models perform better?
 
 Pretrained models do not necessarily perform better than selftrained model, but they do have an advantage. Pretrained models are a bit like looking at two people, who both have never played football in their life, but one is an athlete and one isn't. As said, none of them know football beforehand, but the athlete does have an advantage and may be better, as he has strength and stamina and is in shape. Pretrained models are already trained 
 
-We also tested the ResNet50 model, but it performed a lot worse than out own model, thereofre it is not certain that it will perform better. 
+We also tested the ResNet50 model, but it performed a lot worse than out own model, therefore it is not certain that it will perform better. 
 
 ## What have we learned?
 
