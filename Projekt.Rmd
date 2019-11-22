@@ -44,43 +44,11 @@ if (!require("pacman")) install.packages("pacman") # package for loading and che
 pacman::p_load(knitr, # For knitr to html
                rmarkdown, # For formatting the document
                tidyverse, # Standard datasciewnce toolkid (dplyr, ggplot2 et al.)
-               data.table, # for reading in data ect. 
-               magrittr,# For advanced piping (%>% et al.)
-               igraph, # For network analysis
-               tidygraph, # For tidy-style graph manipulation
-               ggraph, # For ggplot2 style graph plotting
-               Matrix, # For some matrix functionality
-               ggforce, # Awesome plotting
-               kableExtra, # Formatting for tables
-               car, # recode functions 
-               tidytext, # Structure text within tidyverse
-               topicmodels, # For topic modelling
-               tm, # text mining library
-               quanteda, # for LSA (latent semantic analysis)
-               uwot, # for UMAP
-               dbscan, # for density based clustering
-               SnowballC,
-               textdata,
-               wordcloud, 
-               textstem, # for textstemming 
-               tidyr,
-               widyr,
-               reshape2,
-               quanteda,
-               uwot,
-               dbscan,
-               plotly,
-               rsample,
-               glmnet,
-               broom,
-               yardstick,
-               lda, # For LDA-analysis
-               topicmodels, # LDA models
+               dplyr,
                broom,
                keras,
                drat,
-               reticulate,
-               BiocManager
+               reticulate
                )
 ```
 
