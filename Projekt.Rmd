@@ -126,14 +126,16 @@ train_image_array <- flow_images_from_directory(train_images,
                                                     train_images_rescale,
                                                     target_size = c(64,64),
                                                     class_mode = "categorical",
-                                                    classes = FV_list)
+                                                    classes = FV_list,
+                                                    seed = 31)
 
 
 test_image_array <- flow_images_from_directory(test_images, 
                                                     test_images_rescale,
                                                     target_size = c(64,64),
                                                     class_mode = "categorical",
-                                                    classes = FV_list)  
+                                                    classes = FV_list,
+                                                    seed = 31)  
 ```
 
 We can now explore how many images we have in each of our list of fruits.
@@ -148,14 +150,13 @@ As the table show, there is a nice distrubtion of number of images in every clas
 
 # Defining the model
 
-Now it's time to set up the model, that should be able to predict the images. To start of we will define the number of training and testing samples, aswell as the batch_size and epochs.
+Now it's time to set up the model, that should be able to predict the images. To start of we will define the number of training and testing samples, aswell as epochs.
 ##Epochs
 The number of epochs for training indicates, which amount of times the the model will expose itself to the whole training set.
-##Batch size
-The batch size indicates the number of sequences to look at one at time during training. It's advice to do choose the number that matches with the power of two, due to then you train the model on the GPU.
 
 We are now ready for creating a model. We'll start of with a simple Convolutional Neural Net (CNN) model. It will contain the following layers: 2 Convolutional, 1 Pooling and 1 Dense.
 The first thing is to use the 'keras_model_sequential' function which allows us to composing a model with diffrent kind of linear layers.
+In the last layer we use the 'layer_dropout', which is a technique that improves the model with over-fit on neural networks. By using it the  classification error in the model will decrease.
 
 ```{r}
 model <- keras_model_sequential()
@@ -167,21 +168,24 @@ model %>%
   layer_activation_leaky_relu(0.5) %>%
   layer_batch_normalization() %>%
   layer_max_pooling_2d(pool_size = c(2,2)) %>%
-  layer_dropout(0.25) %>%
   layer_flatten() %>%
   layer_dense(100, activation = "relu") %>%
   layer_dropout(0.5) %>%
   layer_dense(length, activation = "softmax")
 ```
 
+Now it's time to compile the model. Which make sure we can configurate the model for the training. 
+We're choosing the metrics is set to 'accuracy' so we can measure the perfomance of the model.
+
 ```{r}
-# compile
 model %>% compile(
   loss = "categorical_crossentropy",
   optimizer = "adam",
   metrics = "accuracy"
 )
 ```
+
+Because we used image_data_generator() and flow_images_from_directory() earlier. We need to use the fit_generator(), when fitting the model on our training data. This function is similiar to the function 'fit()', which require a epochs and batch_size. 
 
 ```{r}
 hist <- model %>% fit_generator(train_image_array,
@@ -190,7 +194,15 @@ hist <- model %>% fit_generator(train_image_array,
   validation_data = test_image_array,
   validation_steps = 100
 )
+
 ```
+
+
+```{r}
+mean(hist$metrics$accuracy)
+```
+
+As shown above the model performed really well. Where the average accuracy is found to be 90,6%, which is quit high and adequate results. Some reasons to why the result is so high, could depend on pictures format, where the fruit is placed on a white background. So the model doesn't get any noise from the background of the picture.
 
 
 # Pretrained model
