@@ -9,9 +9,11 @@ output: html_document
 
 In this project, we are focusing on dealing with image classification, which refers to a process in computer vision that can classify an image according to its visual content. Over the last years, it has grown effective due to it using deep learning. Deep learning is a class of machine learning that uses multiple layers to extract higher level features. Some expamples on its usage are Face Recognition on social platforms like Facebook or Product Discoverability which allows consumers to search for similar images or products.  
 
+## Pretrained models
+
 Keras has 10 pretrained models, for example VGG19 and ResNet50, which are trained on ImageNet, a large collection of images in 1000 classes, and the pretrained models should be able to classify an image that falls into any of these 1000 classes. An image classifier contains convolutional and classifier layers. The convolutional layers extract features and classifier layers classify them using these features. Pretrained models already know how to extract features, and therefore you don't need to train it from scratch. 
 
-We have choosen to work with one of the simpler pretrained models, here the VGG19 model, but you can easily use different models from the Keras library as the procedure is the same. The VGG19 model is a CNN that is trained on more than one million images from ImageNet. It is 19 layers deep.
+We have choosen to work with one of the simpler pretrained models, here the VGG19 model, but you can easily use different models from the Keras library as the procedure is the same. The VGG19 model is a CNN that is trained on more than one million images from ImageNet. The VGG19 model is 19 layers deep.
 
 ## The data set
 In this project we're making a guide on image classification in R. We're working with the Fruit data set from Kaggle, found on https://www.kaggle.com/moltean/fruits/data. Here 120 different fruits and vegetables are stored in different classes. The data set has 82213 images of fruit and vegetables. The data set is split into a training set containing 61488 images and a test set containing 20622 images. The images sizes are 100x100 pixels. 
@@ -228,7 +230,7 @@ You have easily access to pretrained model, in R you simply have to write "appli
 We're using a sequential model, which is a linear stack of layers. First we start by loading the pretrained model. Here there's a lot of options for the model. Here we can apply weights to the ImageNet images. 
 
 ```{r}
-vgg19 = keras::application_vgg19(include_top = FALSE,
+vgg19 = keras::application_resnet50(include_top = FALSE,
                                        weights = 'imagenet', 
                                        input_shape = c(64, 64 ,3))
 ```
@@ -236,8 +238,8 @@ vgg19 = keras::application_vgg19(include_top = FALSE,
 Then you have the possibility to freeze layers. When a layer is frozen, its weights are frozen as well while training. If your current dataset is similar to the one it was freezed on, then it's good to freeze it, otherwise you can train the bottom layers. Here
 
 ```{r}
-resnet501 = resnet50
-resnet501 %>% freeze_weights(from = 1, to = 20)
+resnet501 = vgg19
+resnet501 %>% freeze_weights(from = 1, to = 174)
 ```
 
 Then 
