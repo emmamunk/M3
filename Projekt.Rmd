@@ -203,9 +203,10 @@ hist <- model %>% fit_generator(train_image_array,
 
 ```{r}
 mean(hist$metrics$accuracy)
+mean(hist$metrics$val_accuracy)
 ```
 
-As shown above the model performed really well. Where the average accuracy is found to be 81%, which is quit high and adequate results. Some reasons to why the result is so high, could depend on pictures format, where the fruit is placed on a white background. So the model doesn't get any noise from the background of the picture.
+As shown above the model performed really well. Where the average accuracy is found to be 81%, which is quit high and adequate results. Some reasons to why the result is so high, could depend on pictures format, where the fruit is placed on a white background. So the model doesn't get any noise from the background of the picture. If we put this against the validation accuracy, where is slighty 1% higher in validation.
 
 
 # Pretrained model
@@ -280,7 +281,14 @@ Pretrained models do not necessarily perform better than selftrained model, but 
 We also tested the ResNet50 model, but it performed a lot worse than out own model, thereofre it is not certain that it will perform better. 
 
 ## What have we learned?
+We have learned that simple selftrained model like the CNN model we created in the start. Not could outperform the pretrained model. This could occur from the complexity of the model, which may detect more classifications error then the simple model. None the less we actually saw that the pretrained model gets an higher accuracy on around 10 percentage points, then the selftrained CNN model.
+This is an exiciting topic to dig further in. Due to the pretrained model seems to be more used as a standard procedure.
+And considering that where DL is being used in industries such as. health, finance and retail, etc. Where the impact of a little increase in the accuracy could make big difference.
 
-Pretrained models do not 
+
+```{r}
+mean(history$metrics$accuracy)
+mean(history$metrics$val_accuracy)
+```
 
 
