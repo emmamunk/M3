@@ -98,10 +98,10 @@ test_images = "/Users/Emma/OneDrive/Universitetet/9. semester/SDS/M3/fruits-360_
 Then we need to define a vector of the fruits and vegetables we want to train our model to classify, as we're not going to train it to classify 120. At the same time we also define some variabels to scale down the picture - which original is 100 x 100pixel.
 
 ```{r}
-fruit_list <- c("Quince","Tangelo","Walnut","Physalis","Pepino","Orange","Blueberry","Mulberry","Kaki",
+FV_list <- c("Quince","Tangelo","Walnut","Physalis","Pepino","Orange","Blueberry","Mulberry","Kaki",
                 "Guava","Eggplant","Carambula","Beetroot","Apricot","Avocado")
 
-output_n <- length(fruit_list)
+output_n <- length(FV_list)
 
 img_width <- 20
 img_height <- 20
@@ -133,7 +133,7 @@ train_image_array <- flow_images_from_directory(train_images,
                                                     train_images_rescale,
                                                     target_size = target_size,
                                                     class_mode = "categorical",
-                                                    classes = fruit_list,
+                                                    classes = FV_list,
                                                     seed = 42)
 
 # validation images
@@ -141,7 +141,7 @@ test_image_array <- flow_images_from_directory(test_images,
                                                     test_images_rescale,
                                                     target_size = target_size,
                                                     class_mode = "categorical",
-                                                    classes = fruit_list,
+                                                    classes = FV_list,
                                                     seed = 42)  
 ```
 
