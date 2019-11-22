@@ -98,8 +98,8 @@ test_images = "/Users/Emma/OneDrive/Universitetet/9. semester/SDS/M3/fruits-360_
 Then we need to define a vector of the fruits and vegetables we want to train our model to classify, as we're not going to train it to classify 120. At the same time we also define some variabels to scale down the picture - which original is 100 x 100pixel.
 
 ```{r}
-fruit_list <- c("Kiwi", "Banana", "Apricot", "Avocado", "Cocos", "Clementine", "Mandarine", "Orange",
-                "Limes", "Lemon", "Peach", "Plum", "Raspberry", "Strawberry", "Pineapple", "Pomegranate")
+fruit_list <- c("Quince","Tangelo","Walnut","Physalis","Pepino","Orange","Blueberry","Mulberry","Kaki",
+                "Guava","Eggplant","Carambula","Beetroot","Apricot","Avocado")
 
 output_n <- length(fruit_list)
 
@@ -154,10 +154,6 @@ table(factor(train_image_array$classes))
 
 As the table show, there is a nice distrubtion of number of images in every classes. That's good so we dont have a group of classes which is over represented over others classes.
 
-```{r}
-#fruits_classes_indices <- train_image_array_gen$class_indices 
-```
-
 
 # Defining the model
 
@@ -174,7 +170,7 @@ train_samples <- train_image_array$n
 test_samples <- test_image_array$n
 
 # define batch size and number of epochs
-batch_size <- 512
+batch_size <- 64
 epochs <- 10
 ```
 
