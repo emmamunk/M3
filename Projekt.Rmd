@@ -3,16 +3,23 @@ title: "Projekt"
 date: "20 nov 2019"
 output: html_document
 ---
+# An introduction to image classification for multiple classes using CNN and ResNet
 
-## Intoduction
+## Image classification for multiple classes
 
 In this project, we are focusing on dealing with image classification, which refers to a process in computer vision that can classify an image according to its visual content. Over the last years, it has grown effective due to it using deep learning. Deep learning is a class of machine learning that uses multiple layers to extract higher level features. Some expamples on its usage are Face Recognition on social platforms like Facebook or Product Discoverability which allows consumers to search for similar images or products.  
 
+Keras has 10 pretrained models, for example VGG16 and ResNet50, which are trained on ImageNet, a large collection of images in 1000 classes. An image classifier contains convolutional and fully conncted layers. The convolutional layers extract features and fully conncted classify them using the features. 
+
+
+## The data set
 In this project we're making a guide on image classification in R. We're working with the Fruit data set from Kaggle, found on https://www.kaggle.com/moltean/fruits/data. Here 120 different fruits and vegetables are stored in different classes. The data set has 82213 images of fruit and vegetables. The data set is split into a training set containing 61488 images and a test set containing 20622 images. The images sizes are 100x100 pixels. 
 
 In the data set there was a difference in lighting conditions, the background was not uniform and beforehand there has been written a dedicated algorithm which extracts the fruit from the background, so the fruit and vegetables are seen on the images with a white background.
 
-## Load the data
+## An example using CNN
+
+### Load the data
 We start by cleaning the global environment. 
 
 ```{r}
@@ -23,8 +30,8 @@ rm(list=ls())
 And then we'll import Keras, which is essential for the anaysis. You have to use "install_keras" if you're installing Keras for the first time.
 
 ```{r}
-#devtools::install_github("rstudio/keras", force = TRUE)
-#library(keras)
+devtools::install_github("rstudio/keras", force = TRUE)
+library(keras)
 #install_keras()
 ```
 
@@ -77,9 +84,9 @@ pacman::p_load(knitr, # For knitr to html
 ```
 
 
-## Preprocessing 
+### Preprocessing 
 
-And then we can load the data... bla bla bla. local or Github.
+And then we can load the data the data from Kaggle. We just loaded it locally
 
 ```{r}
 train_images = "/Users/Emma/OneDrive/Universitetet/9. semester/SDS/M3/fruits-360_dataset/fruits-360/Training/"
@@ -88,9 +95,9 @@ test_images = "/Users/Emma/OneDrive/Universitetet/9. semester/SDS/M3/fruits-360_
 ```
 
 ```{r}
-train_image_files_path = "C:/Users/Michael Thomsen/Desktop/fruits-360_dataset/fruits-360/Training/"
+train_images = "C:/Users/Michael Thomsen/Desktop/fruits-360_dataset/fruits-360/Training/"
 
-valid_image_files_path = "C:/Users/Michael Thomsen/Desktop/fruits-360_dataset/fruits-360/Test/"
+test_images = "C:/Users/Michael Thomsen/Desktop/fruits-360_dataset/fruits-360/Test/"
 ```
 
 
