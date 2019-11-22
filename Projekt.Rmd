@@ -300,9 +300,3 @@ This is an exiciting topic to dig further in. Due to the pretrained model seems 
 And considering that where DL is being used in industries such as. health, finance and retail, etc. Where the impact of a little increase in the accuracy could make big difference.
 
 
-```{r}
-mean(history$metrics$accuracy)
-mean(history$metrics$val_accuracy)
-```
-
-
