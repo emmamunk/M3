@@ -98,7 +98,7 @@ test_images = "/Users/Emma/OneDrive/Universitetet/9. semester/SDS/M3/fruits-360_
 Then we need to define a vector of the fruits and vegetables we want to train our model to classify, as we're not going to train it to classify 120. At the same time we also define some variabels to scale down the picture - which original is 100 x 100pixel.
 
 ```{r}
-FV_list <- c("Quince","Tangelo","Walnut","Physalis","Pepino","Orange","Blueberry","Mulberry","Kaki", "Guava","Eggplant","Carambula","Beetroot","Apricot","Avocado")
+FV_list <- c("Quince","Tangelo","Walnut","Physalis","Pepino","Orange","Blueberry","Mulberry","Kaki","Guava","Eggplant","Carambula","Beetroot","Apricot","Avocado", "Ginger Root")
 
 length <- length(FV_list)
 
@@ -195,26 +195,23 @@ hist <- model %>% fit_generator(train_image_array,
 
 
 # Pretrained model
+In this example, we would use a pretrained model to see how it compares to our own model. You have easily access to pretrained model, in R you simply have to write "application_" and then 10 pretrained models will show. 
 
-
-```{r}
-resnet50 = keras::application_resnet50(weights = NULL)
-```
+We're using a sequential model, which is a linear stack of layers. First we start by loading the pretrained model. Here there's a lot of options for the model. Here we can apply weights to the ImageNet images. 
 
 ```{r}
-summary(resnet50)
+resnet50 = keras::application_resnet50(include_top = FALSE, weights = NULL, pooling = 'avg', input_shape = c(64, 64 ,3))
 ```
 
-```{r}
-freeze_weights(resnet50, from = 1, to = 48)
-```
+Then you have the possibility to freeze layers. When a layer is frozen, its weights are frozen as well while training. If your current dataset is similar to the one it was freezed on, then it's good to freeze it, otherwise you can train the bottom layers. 
 
 ```{r}
 model = keras_model_sequential(resnet50)
 ```
 
 ```{r}
-model = model %>% layer_dense(units = 16, activation = "sigmoid")
+model1 = model %>% layer_flatten() %>% layer_dense(units = 128, activation = "relu")
+model1 = model1 %>% layer_dense(units = 16, activation = "softmax")
 ```
 
 ```{r}
@@ -223,13 +220,13 @@ dim(model)
 
 
 ```{r}
-summary(model)
+summary(model1)
 ```
 
 
 ```{r}
 model %>% compile(
-  optimizer = "rmsprop",
+  optimizer = "adam",
   loss = "categorical_crossentropy",
   metrics = "accuracy"
 )
@@ -239,11 +236,14 @@ model %>% compile(
 
 ```{r}
 history = model %>% fit_generator(
-  training_set,
+  train_image_array,
   epochs = 10,
-  steps_per_epoch = 100,
-  validation_data = test_set,
-  validation_steps = 100
+  steps_per_epoch = 10,
+  validation_data = test_image_array,
+  validation_steps = 10
 )
 ```
+
+
+
 
