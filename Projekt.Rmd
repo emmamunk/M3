@@ -3,14 +3,16 @@ title: "Projekt"
 date: "20 nov 2019"
 output: html_document
 ---
-# An introduction to image classification for multiple classes using CNN and ResNet
+# Comparing trained and pretrained on Image Classification
 
 ## Image classification for multiple classes
 
 In this project, we are focusing on dealing with image classification, which refers to a process in computer vision that can classify an image according to its visual content. Over the last years, it has grown effective due to it using deep learning. Deep learning is a class of machine learning that uses multiple layers to extract higher level features. Some expamples on its usage are Face Recognition on social platforms like Facebook or Product Discoverability which allows consumers to search for similar images or products.  
 
-Keras has 10 pretrained models, for example VGG16 and ResNet50, which are trained on ImageNet, a large collection of images in 1000 classes. An image classifier contains convolutional and fully conncted layers. The convolutional layers extract features and fully conncted classify them using the features. 
+  
 
+
+Keras has 10 pretrained models, for example VGG16 and ResNet50, which are trained on ImageNet, a large collection of images in 1000 classes. An image classifier contains convolutional and fully conncted layers. The convolutional layers extract features and fully conncted classify them using the features. 
 
 ## The data set
 In this project we're making a guide on image classification in R. We're working with the Fruit data set from Kaggle, found on https://www.kaggle.com/moltean/fruits/data. Here 120 different fruits and vegetables are stored in different classes. The data set has 82213 images of fruit and vegetables. The data set is split into a training set containing 61488 images and a test set containing 20622 images. The images sizes are 100x100 pixels. 
@@ -107,7 +109,6 @@ Then we need to define a vector of the fruits and vegetables we want to train ou
 FV_list <- c("Quince","Tangelo","Walnut","Physalis","Pepino","Orange","Blueberry","Mulberry","Kaki","Guava","Eggplant","Carambula","Beetroot","Apricot","Avocado", "Ginger Root")
 
 length <- length(FV_list)
-
 ```
 
 Then we're using the function "image_data_generator", which can load and generate batches of the image data. Here we're first rescaling the image data. For most image data, the pixel values are integers with values between 0 and 255, which is why dividing the data with 255. This is performed across all channels, regardless of the actual range of pixel values that are present in the images. Here we're also applying zoom range, which is the amount of zoom. We're also rescaling the test data set
@@ -198,22 +199,38 @@ In this example, we would use a pretrained model to see how it compares to our o
 
 We're using a sequential model, which is a linear stack of layers. First we start by loading the pretrained model. Here there's a lot of options for the model. Here we can apply weights to the ImageNet images. 
 
+## Setting up your own pretrained model from Keras
+
+1. Choose pretrained model and loading it using "application_"
+2. Choose if you want to freeze any layers
+3. Trainsform model into sequational or xxx data
+4. Add layers if wanted
+5. Choose optimizer, loss and metrics
+6. Run model using "fit_generator"
+
+## An example
+
 ```{r}
-resnet50 = keras::application_resnet50(include_top = FALSE, 
-                                       pooling = 'avg',
+resnet50 = keras::application_vgg19(include_top = FALSE,
                                        weights = 'imagenet', 
                                        input_shape = c(64, 64 ,3))
 ```
 
 Then you have the possibility to freeze layers. When a layer is frozen, its weights are frozen as well while training. If your current dataset is similar to the one it was freezed on, then it's good to freeze it, otherwise you can train the bottom layers. 
 
+```{r}
+resnet501 = resnet50
+resnet501 %>% freeze_weights(from = 1, to = 20)
+```
+
 
 ```{r}
-model = keras_model_sequential(resnet50)
+model = keras_model_sequential(resnet501)
+model1 = keras_model_sequential(resnet501)
 ```
 
 ```{r}
-model1 = model %>% layer_dropout(0.5)
+model1 = model %>% layer_flatten() %>% layer_dense(units = 1024, activation = 'relu') %>% layer_dropout(0.5)
 model2 = model1 %>% layer_dense(units = 16, activation = "softmax")
 ```
 
@@ -235,13 +252,21 @@ model2 %>% compile(
 ```{r}
 history = model2 %>% fit_generator(
   train_image_array,
-  epochs = 2,
+  epochs = 5,
   steps_per_epoch = 50,
   validation_data = test_image_array,
   validation_steps = 50
 )
 ```
 
+## Why does the pretrained models perform better?
 
+Pretrained models do not necessarily perform better than selftrained model, but they do have an advantage. Pretrained models are a bit like looking at two people, who both have never played football in their life, but one is an athlete and one isn't. As said, none of them know football beforehand, but the athlete does have an advantage and may be better, as he has strength and stamina and is in shape. Pretrained models are already trained 
+
+We also tested the ResNet50 model, but it performed a lot worse than out own model, thereofre it is not certain that it will perform better. 
+
+## What have we learned?
+
+Pretrained models do not 
 
 
