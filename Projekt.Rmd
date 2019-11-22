@@ -11,12 +11,14 @@ In this project, we are focusing on dealing with image classification, which ref
 
 Keras has 10 pretrained models, for example VGG19 and ResNet50, which are trained on ImageNet, a large collection of images in 1000 classes, and the pretrained models should be able to classify an image that falls into any of these 1000 classes. An image classifier contains convolutional and classifier layers. The convolutional layers extract features and classifier layers classify them using these features. Pretrained models already know how to extract features, and therefore you don't need to train it from scratch. 
 
-We have choosen to work with one of the simpler pretrained models, here the VGG19 model, but you can easily use different models from the Keras library as the procedure is the same. The VGG19 model is a 
+We have choosen to work with one of the simpler pretrained models, here the VGG19 model, but you can easily use different models from the Keras library as the procedure is the same. The VGG19 model is a CNN that is trained on more than one million images from ImageNet. It is 19 layers deep.
 
 ## The data set
 In this project we're making a guide on image classification in R. We're working with the Fruit data set from Kaggle, found on https://www.kaggle.com/moltean/fruits/data. Here 120 different fruits and vegetables are stored in different classes. The data set has 82213 images of fruit and vegetables. The data set is split into a training set containing 61488 images and a test set containing 20622 images. The images sizes are 100x100 pixels. 
 
 In the data set there was a difference in lighting conditions, the background was not uniform and beforehand there has been written a dedicated algorithm which extracts the fruit from the background, so the fruit and vegetables are seen on the images with a white background.
+
+## Comparing CNN and VGG19 for multiple classes
 
 ## An example using CNN
 
@@ -70,7 +72,7 @@ test_images = "C:/Users/Michael Thomsen/Desktop/fruits-360_dataset/fruits-360/Te
 ```
 
 
-Then we need to define a vector of the fruits and vegetables we want to train our model to classify, as we're not going to train it to classify 120. At the same time we also define some variabels to scale down the picture - which original is 100 x 100pixel.
+Then we need to define a vector of the fruits and vegetables we want to train our model to classify, as we're not going to train it to classify 120. At the same time we also define some variabels to scale down the picture - which original is 100 x 100 pixels.
 
 ```{r}
 FV_list <- c("Quince","Tangelo","Cactus fruit","Physalis","Pepino","Orange","Blueberry","Mulberry",
@@ -164,7 +166,6 @@ hist <- model %>% fit_generator(train_image_array,
                                 validation_data = test_image_array,
                                 validation_steps = 100
 )
-
 ```
 
 
@@ -208,6 +209,9 @@ resnet501 %>% freeze_weights(from = 1, to = 20)
 ```
 
 Then 
+```{r}
+summary(resnet50)
+```
 
 ```{r}
 model = keras_model_sequential(resnet501)
