@@ -71,7 +71,8 @@ pacman::p_load(knitr, # For knitr to html
                broom,
                keras,
                drat,
-               reticulate
+               reticulate,
+               BiocManager
                )
 ```
 
@@ -93,7 +94,7 @@ valid_image_files_path = "C:/Users/Michael Thomsen/Desktop/fruits-360_dataset/fr
 ```
 
 
-Then we need to define a vector of the fruits and vegetables we want to train our model to classify, as we're not going to train it to classify 120.
+Then we need to define a vector of the fruits and vegetables we want to train our model to classify, as we're not going to train it to classify 120. At the same time we also define some variabels to scale down the picture - which original is 100 x 100pixel.
 
 ```{r}
 fruit_list = c("Kiwi", "Banana", "Apricot", "Avocado", "Cocos", "Clementine", "Mandarine", "Orange", "Limes", "Lemon", "Peach", "Plum", "Raspberry", "Strawberry", "Pineapple", "Pomegranate")
@@ -101,6 +102,7 @@ output_n <- length(fruit_list)
 img_width <- 20
 img_height <- 20
 target_size <- c(img_width, img_height)
+#RBG Channels is set to 3, due to RBG images has three channels (Red,Green and Blue)
 channels <- 3
 
 ```
@@ -140,6 +142,11 @@ table(factor(train_image_array_gen$classes))
 
 As the table show, there is a nice distrubtion of number of images in every classes. That's good so we dont have a group of classes which is over represented over others classes.
 
+```{r}
+fruits_classes_indices <- train_image_array_gen$class_indices  
+```
+
+
 # Defining the model
 
 Now it's time to set up the model, that should be able to predict the images. To start of we will define the number of training and testing samples, aswell as the batch_size and epochs.
@@ -162,40 +169,46 @@ We are now ready for creating a model. We'll start of with a simple Convolutiona
 The first thing is to use the 'keras_model_sequential' function which allows us to composing a model with diffrent kind of linear layers.
 
 ```{r}
-model <- keras_model_sequential()
-  
-model %>% 
-  layer_conv_2d(filter = 32, kernel_size = c(3,3), padding = 'same', input_shape = c(img_width, img_height, channels)) %>%
-  layer_activation('relu') %>%
-  layer_conv_2d(filter = 16, kernel_size = c(3,3), padding = 'same') %>%
+model <- keras_model_sequential() %>% 
+
+  layer_conv_2d(filter = 32, kernel_size = c(3,3), padding = "same", 
+  input_shape = c(img_width, img_height, channels)) %>%
+  layer_activation("relu") %>%
+  layer_conv_2d(filter = 16, kernel_size = c(3,3), padding = "same") %>%
   layer_activation_leaky_relu(0.5) %>%
   layer_batch_normalization() %>%
   layer_max_pooling_2d(pool_size = c(2,2)) %>%
   layer_dropout(0.25) %>%
   layer_flatten() %>%
   layer_dense(100) %>%
-  layer_activation('relu') %>%
+  layer_activation("relu") %>%
   layer_dropout(0.5) %>%
   layer_dense(output_n) %>% 
-  layer_activation('softmax')
+  layer_activation("softmax")
 ```
 
 ```{r}
 # compile
 model %>% compile(
   loss = 'categorical_crossentropy',
-  optimizer = optimizer_rmsprop(lr = 0.0001, decay = 1e-6),
+  optimizer = "rmsprop",
   metrics = 'accuracy'
 )
 ```
 
 ```{r}
-hist <- fit_generator(
+hist <- model %>% fit_generator(
+  # training data
   train_image_array_gen,
+  
+  # epochs
   steps_per_epoch = as.integer(train_samples / batch_size), 
-  epochs = epochs,
+  epochs = epochs, 
+  
+  # validation data
   validation_data = valid_image_array_gen,
-  validation_steps = as.integer(valid_samples / batch_size))
+  validation_steps = as.integer(valid_samples / batch_size)
+)
 ```
 
 
