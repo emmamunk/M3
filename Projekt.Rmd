@@ -189,9 +189,9 @@ Because we used image_data_generator() and flow_images_from_directory() earlier.
 
 ```{r}
 hist <- model %>% fit_generator(train_image_array,
-  steps_per_epoch = 100, 
-  epochs = 10, 
-  validation_data = test_image_array,
+                                steps_per_epoch = 100, 
+                                epochs = 10, 
+                                validation_data = test_image_array,
   validation_steps = 100
 )
 
@@ -211,19 +211,21 @@ In this example, we would use a pretrained model to see how it compares to our o
 We're using a sequential model, which is a linear stack of layers. First we start by loading the pretrained model. Here there's a lot of options for the model. Here we can apply weights to the ImageNet images. 
 
 ```{r}
-resnet50 = keras::application_vgg19
-
-(include_top = FALSE, weights = 'imagenet', input_shape = c(64, 64 ,3))
+resnet50 = keras::application_resnet50(include_top = FALSE, 
+                                       pooling = 'avg',
+                                       weights = 'imagenet', 
+                                       input_shape = c(64, 64 ,3))
 ```
 
 Then you have the possibility to freeze layers. When a layer is frozen, its weights are frozen as well while training. If your current dataset is similar to the one it was freezed on, then it's good to freeze it, otherwise you can train the bottom layers. 
+
 
 ```{r}
 model = keras_model_sequential(resnet50)
 ```
 
 ```{r}
-model1 = model %>% layer_flatten()
+model1 = model %>% layer_dropout(0.5)
 model2 = model1 %>% layer_dense(units = 16, activation = "softmax")
 ```
 
@@ -245,10 +247,10 @@ model2 %>% compile(
 ```{r}
 history = model2 %>% fit_generator(
   train_image_array,
-  epochs = 10,
-  steps_per_epoch = 10,
+  epochs = 2,
+  steps_per_epoch = 50,
   validation_data = test_image_array,
-  validation_steps = 10
+  validation_steps = 50
 )
 ```
 
