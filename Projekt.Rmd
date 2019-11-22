@@ -172,7 +172,8 @@ model %>%
   layer_dense(100, activation = "relu") %>%
   layer_dropout(0.5) %>%
   layer_dense(length, activation = "softmax")
-```
+
+,```
 
 Now it's time to compile the model. Which make sure we can configurate the model for the training. 
 We're choosing the metrics is set to 'accuracy' so we can measure the perfomance of the model.
@@ -202,7 +203,7 @@ hist <- model %>% fit_generator(train_image_array,
 mean(hist$metrics$accuracy)
 ```
 
-As shown above the model performed really well. Where the average accuracy is found to be 90,6%, which is quit high and adequate results. Some reasons to why the result is so high, could depend on pictures format, where the fruit is placed on a white background. So the model doesn't get any noise from the background of the picture.
+As shown above the model performed really well. Where the average accuracy is found to be 85%, which is quit high and adequate results. Some reasons to why the result is so high, could depend on pictures format, where the fruit is placed on a white background. So the model doesn't get any noise from the background of the picture.
 
 
 # Pretrained model
