@@ -95,9 +95,9 @@ test_images = "/Users/Emma/OneDrive/Universitetet/9. semester/SDS/M3/fruits-360_
 ```
 
 ```{r}
-train_images = "C:/Users/Michael Thomsen/Desktop/fruits-360_dataset/fruits-360/Training/"
+train_image_files_path = "C:/Users/Michael Thomsen/Desktop/fruits-360_dataset/fruits-360/Training/"
 
-test_images = "C:/Users/Michael Thomsen/Desktop/fruits-360_dataset/fruits-360/Test/"
+valid_image_files_path = "C:/Users/Michael Thomsen/Desktop/fruits-360_dataset/fruits-360/Test/"
 ```
 
 
@@ -125,7 +125,7 @@ We now want to load our images into the memory and resize them. To do this the '
 
 ```{r}
 #Training images
-train_image_array_gen = flow_images_from_directory(train_image_files_path,
+train_image_array_gen <- flow_images_from_directory(train_image_files_path,
                                           train_data_gen,
                                           target_size = target_size,
                                           class_mode = 'categorical', 
@@ -133,7 +133,7 @@ train_image_array_gen = flow_images_from_directory(train_image_files_path,
                                           seed = 42)
 
 #Testing images
-valid_image_array_gen = flow_images_from_directory(valid_image_files_path,
+vaild_image_array_gen <- flow_images_from_directory(valid_image_files_path,
                                           valid_data_gen,
                                           class_mode = 'categorical', 
                                           classes = fruit_list,
