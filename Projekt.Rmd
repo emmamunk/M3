@@ -104,7 +104,8 @@ test_images = "C:/Users/Michael Thomsen/Desktop/fruits-360_dataset/fruits-360/Te
 Then we need to define a vector of the fruits and vegetables we want to train our model to classify, as we're not going to train it to classify 120. At the same time we also define some variabels to scale down the picture - which original is 100 x 100pixel.
 
 ```{r}
-FV_list <- c("Quince","Tangelo","Walnut","Physalis","Pepino","Orange","Blueberry","Mulberry","Kaki","Guava","Eggplant","Carambula","Beetroot","Apricot","Avocado", "Ginger Root")
+FV_list <- c("Quince","Tangelo","Cactus fruit","Physalis","Pepino","Orange","Blueberry","Mulberry",
+             "Kaki","Guava","Eggplant","Carambula","Beetroot","Apricot","Avocado", "Banana")
 
 length <- length(FV_list)
 
@@ -173,7 +174,7 @@ model %>%
   layer_dropout(0.5) %>%
   layer_dense(length, activation = "softmax")
 
-,```
+```
 
 Now it's time to compile the model. Which make sure we can configurate the model for the training. 
 We're choosing the metrics is set to 'accuracy' so we can measure the perfomance of the model.
@@ -203,7 +204,7 @@ hist <- model %>% fit_generator(train_image_array,
 mean(hist$metrics$accuracy)
 ```
 
-As shown above the model performed really well. Where the average accuracy is found to be 85%, which is quit high and adequate results. Some reasons to why the result is so high, could depend on pictures format, where the fruit is placed on a white background. So the model doesn't get any noise from the background of the picture.
+As shown above the model performed really well. Where the average accuracy is found to be 81%, which is quit high and adequate results. Some reasons to why the result is so high, could depend on pictures format, where the fruit is placed on a white background. So the model doesn't get any noise from the background of the picture.
 
 
 # Pretrained model
