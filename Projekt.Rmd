@@ -1,33 +1,45 @@
 ---
-title: "Projekt"
+title: "Image Classification for multiple classes"
 date: "20 nov 2019"
-output: html_document
+output:
+  html_document:
+    code_folding: hide
+    df_print: paged
+    number_sections: yes
+    toc: yes
+    toc_float: yes
+  pdf_document:
+    toc: yes
 ---
-# Comparing trained and pretrained models on Image Classification for multiple classes
+# Introduction
+The purpose of this paper is to make a model for image classification for multiple classes. we'll try to make out own model and then try two pretrained models as well to see which one of the three models perform better.
 
-## Image classification for multiple classes
+# Image classification for multiple classes
 
-In this project, we are focusing on dealing with image classification, which refers to a process in computer vision that can classify an image according to its visual content. Over the last years, it has grown effective due to it using deep learning. Deep learning is a class of machine learning that uses multiple layers to extract higher level features. Some expamples on its usage are Face Recognition on social platforms like Facebook or Product Discoverability which allows consumers to search for similar images or products.  
+In this project, we are focusing on dealing with image classification, which refers to a process in computer vision that can classify an image according to its visual content. Over the last years, it has grown effective due to it using deep learning. There's a lot to learn from image classification for multiple classes. Some expamples on its usage are Face Recognition on social platforms like Facebook or Product Discoverability which allows consumers to search for similar images or products. The possibilities are endless.
 
-## Pretrained models
+# Pretrained models
 
-Keras has 10 pretrained models, for example VGG19 and ResNet50, which are trained on ImageNet, a large collection of images in 1000 classes, and the pretrained models should be able to classify an image that falls into any of these 1000 classes. An image classifier contains convolutional and classifier layers. The convolutional layers extract features and classifier layers classify them using these features. Pretrained models already know how to extract features, and therefore you don't need to train it from scratch. 
+Keras has 10 pretrained models, for example VGG19 and ResNet50, which are trained on ImageNet, a large collection of images in 1000 classes, and the pretrained models should be able to classify an image that falls into any of these 1000 classes. An image classifier contains convolutional and classifier layers. The convolutional layers extract features and classifier layers classify them using these features. Pretrained models already know how to extract features, and therefore you don't need to train it from scratch. Therefore, it is a possiblity, but not certain, that they will perform better than models we train from scratch.
 
-We have choosen to work with one of the simpler pretrained models, here the VGG19 model, but you can easily use different models from the Keras library as the procedure is the same. The VGG19 model is a CNN that is trained on more than one million images from ImageNet. The VGG19 model is 19 layers deep.
+We have choosen to work with two of the "simpler" pretrained models, here the VGG19 model and the ResNet50, but you can easily use different models from the Keras library as the procedure is the same. 
+
+The VGG19 model is a CNN that is trained on more than one million images from ImageNet and has 19 layers deep. The ResNet50 model is more complex with 50 layers with over 23 million trainable parameters that run through five stages, which each have layers. We might think that deep models always perform the same way or better than simple models, but that isn't always the case and often they perform worse. That's why residual networks, like ResNet50, are introduced. It will be interesting to see if the more complex models perform better.
+
+# CASE: Comparing a simple CNN and pretrained models for multiple classes
+
+In this section, we will compare a CNN with two pretrained models, here VGG19 and ResNet50.
 
 ## The data set
+
 In this project we're making a guide on image classification in R. We're working with the Fruit data set from Kaggle, found on https://www.kaggle.com/moltean/fruits/data. Here 120 different fruits and vegetables are stored in different classes. The data set has 82213 images of fruit and vegetables. The data set is split into a training set containing 61488 images and a test set containing 20622 images. The images sizes are 100x100 pixels. 
 
-In the data set there was a difference in lighting conditions, the background was not uniform and beforehand there has been written a dedicated algorithm which extracts the fruit from the background, so the fruit and vegetables are seen on the images with a white background.
+In the data set there was a difference in lighting conditions, the background was not uniform and beforehand there has been written a dedicated algorithm which extracts the fruit from the background, so the fruit and vegetables are seen on the images with a white background. A fairly easy dataset as we should take into consideraton.
 
-## Comparing CNN and VGG19 for multiple classes
-
-## An example using CNN
-
-### Load the data
+## Load the data
 We start by cleaning the global environment. 
 
-```{r}
+```{r, include=FALSE}
 #Cleaning the environment
 rm(list=ls())
 ```
@@ -42,7 +54,7 @@ library(keras)
 
 And then we'll load a bunch of other packages.
 
-```{r, include=FALSE}
+```{r}
 #Loading packages
 if (!require("pacman")) install.packages("pacman") # package for loading and checking packages :)
 pacman::p_load(knitr, # For knitr to html
@@ -57,42 +69,30 @@ pacman::p_load(knitr, # For knitr to html
 ```
 
 
-### Preprocessing 
+## Preprocessing 
 
-And then we can load the data the data from Kaggle. We just loaded it locally, downloading and unpacking it from Kaggle.
+And then we can load the data the data from Kaggle. We just loaded it locally, downloading and unpacking it from Kaggle. This coding is not show as it is just our local path.
 
-```{r}
+```{r, include=FALSE}
 train_images = "/Users/Emma/OneDrive/Universitetet/9. semester/SDS/M3/fruits-360_dataset/fruits-360/Training/"
 
 test_images = "/Users/Emma/OneDrive/Universitetet/9. semester/SDS/M3/fruits-360_dataset/fruits-360/Test/"
 ```
 
-```{r}
-train_images = "C:/Users/Michael Thomsen/Desktop/fruits-360_dataset/fruits-360/Training/"
-
-test_images = "C:/Users/Michael Thomsen/Desktop/fruits-360_dataset/fruits-360/Test/"
-```
-
-
-Then we need to define a vector of the fruits and vegetables we want to train our model to classify, as we're not going to train it to classify 120. At the same time we also define some variabels to scale down the picture - which original is 100 x 100 pixels.
+Then we need to define a vector of the fruits and vegetables we want to train our model to classify, as we're not going to train it to classify 120, therefore we choose 16 totally random fruits and vegtables. 
 
 ```{r}
-FV_list <- c("Quince","Tangelo","Cactus fruit","Physalis","Pepino","Orange","Blueberry","Mulberry",
-             "Kaki","Guava","Eggplant","Carambula","Beetroot","Apricot","Avocado", "Banana")
-
-length <- length(FV_list)
+FV_list = c("Quince","Tangelo","Cactus fruit","Physalis","Pepino","Orange","Blueberry","Mulberry", "Kaki","Guava","Eggplant","Carambula","Beetroot","Apricot","Avocado", "Banana")
 ```
 
-Then we're using the function "image_data_generator", which can load and generate batches of the image data. Here we're first rescaling the image data. For most image data, the pixel values are integers with values between 0 and 255, which is why dividing the data with 255. This is performed across all channels, regardless of the actual range of pixel values that are present in the images. Here we're also applying zoom range, which is the amount of zoom. We're also rescaling the test data set
+Then we're using the function "image_data_generator", which can load and generate batches of the image data. Here we're first rescaling the image data. For most image data, the pixel values are integers with values between 0 and 255, which is why dividing the data with 255. This is performed across all channels, regardless of the actual range of pixel values that are present in the images.
 
 ```{r}
 train_images_rescale = image_data_generator(rescale = 1/255)
-
 test_images_rescale = image_data_generator(rescale = 1/255)
 ```
 
-We now want to load our images into the memory and resize them. To do this the 'flow_images_from_directory' function from the Keras package will come in use. It allows us to generate batches of data from images in a directory. We start by setting the 'class_mode' to categorical, due to the data list we created earlier. The same applies for the which 'classes', we are refering back to. At last we the set the seed to 123, as it allows us to reproduce the same results later.
-
+We now want to load our images into the memory and resize them. To do this the 'flow_images_from_directory' function from the Keras package will come in use. It allows us to generate batches of data from images in a directory. We start by setting the 'class_mode' to categorical, due to the data list we created earlier. The same applies for the which "classes", we are refering back to. At last we the set the seed to 31, as it allows us to reproduce the same results later.
 
 ```{r}
 train_image_array <- flow_images_from_directory(train_images, 
@@ -101,7 +101,6 @@ train_image_array <- flow_images_from_directory(train_images,
                                                     class_mode = "categorical",
                                                     classes = FV_list,
                                                     seed = 31)
-
 
 test_image_array <- flow_images_from_directory(test_images, 
                                                     test_images_rescale,
@@ -118,38 +117,28 @@ cat("Number of images per class:")
 table(factor(train_image_array$classes))
 ```
 
-As the table show, there is a nice distrubtion of number of images in every classes. That's good so we dont have a group of classes which is over represented over others classes.
+As the table show, there is a nice distrubtion of number of images in every classes. That's good so we don't have a group of classes which is over represented over others classes.
 
+## Simple CNN
 
-# Defining the model
+Now it's time to set up the simple CNN model, that should be able to predict the images. 
 
-Now it's time to set up the model, that should be able to predict the images. To start of we will define the number of training and testing samples, aswell as epochs.
-##Epochs
-The number of epochs for training indicates, which amount of times the the model will expose itself to the whole training set.
-
-We are now ready for creating a model. We'll start of with a simple Convolutional Neural Net (CNN) model. It will contain the following layers: 2 Convolutional, 1 Pooling and 1 Dense.
-The first thing is to use the 'keras_model_sequential' function which allows us to composing a model with diffrent kind of linear layers.
-In the last layer we use the 'layer_dropout', which is a technique that improves the model with over-fit on neural networks. By using it the  classification error in the model will decrease.
+We are now ready for creating a model. We'll start of with a simple CNN model. It will contain the following layers: 2 Convolutional, 1 Pooling and 1 Dense. The first thing is to use the 'keras_model_sequential' function which allows us to composing a model with diffrent kind of linear layers. In the last layer we use the 'layer_dropout', which is a technique that improves the model with over-fit on neural networks. By using it the  classification error in the model will decrease. The 
 
 ```{r}
-model <- keras_model_sequential()
-
+model = keras_model_sequential()
 
 model %>%
   layer_conv_2d(filter = 32, kernel_size = c(3,3), padding = "same", input_shape = c(64,64, 3), activation = "relu") %>%
   layer_conv_2d(filter = 16, kernel_size = c(3,3), padding = "same") %>%
-  layer_activation_leaky_relu(0.5) %>%
-  layer_batch_normalization() %>%
   layer_max_pooling_2d(pool_size = c(2,2)) %>%
   layer_flatten() %>%
   layer_dense(100, activation = "relu") %>%
   layer_dropout(0.5) %>%
-  layer_dense(length, activation = "softmax")
-
+  layer_dense(16, activation = "softmax")
 ```
 
-Now it's time to compile the model. Which make sure we can configurate the model for the training. 
-We're choosing the metrics is set to 'accuracy' so we can measure the perfomance of the model.
+Now it's time to compile the model. Which make sure we can configurate the model for the training.  We're choosing the metrics is set to 'accuracy' so we can measure the perfomance of the model.
 
 ```{r}
 model %>% compile(
@@ -159,79 +148,78 @@ model %>% compile(
 )
 ```
 
-Because we used image_data_generator() and flow_images_from_directory() earlier. We need to use the fit_generator(), when fitting the model on our training data. This function is similiar to the function 'fit()', which require a epochs and batch_size. 
+Because we used 'image_data_generator()' and 'flow_images_from_directory()' earlier. We need to use the fit_generator(), when fitting the model on our training data. This function is similiar to the function 'fit()', which require epochs and batch_size. The number of epochs for training indicates, which amount of times the the model will expose itself to the whole training set. We're setting steps per epoch to 100, so the model can run. 
 
 ```{r}
-hist <- model %>% fit_generator(train_image_array,
+history = model %>% fit_generator(train_image_array,
                                 steps_per_epoch = 100, 
-                                epochs = 10, 
+                                epochs = 5, 
                                 validation_data = test_image_array,
-                                validation_steps = 100
-)
+                                validation_steps = 100)
 ```
 
+Then we plot the model.
 
 ```{r}
-mean(hist$metrics$accuracy)
-mean(hist$metrics$val_accuracy)
+plot(history)
 ```
 
-As shown above the model performed really well. Where the average accuracy is found to be 81%, which is quit high and adequate results. Some reasons to why the result is so high, could depend on pictures format, where the fruit is placed on a white background. So the model doesn't get any noise from the background of the picture. If we put this against the validation accuracy, where is slighty 1% higher in validation.
 
+At last we can find the metrics and how it perform.
 
-# Pretrained model
-In this example, we would use a pretrained model to see how it compares to our own model. 
+```{r}
+history$metrics
+```
 
-## Setting up your own pretrained model from Keras
+And then the mean values of the accuracy and valuation accuracy.
 
-1. Choose pretrained model and load it using "application_"
-2. Choose if you want to freeze any layers
-3. Trainsform model into sequational or xxx data
-4. Add layers if wanted
-5. Choose optimizer, loss and metrics
-6. Run model using "fit_generator"
+```{r}
+mean(history$metrics$accuracy)
+mean(history$metrics$val_accuracy)
+```
 
-## An example
+As shown above the model performed really well. Where the average accuracy is found to be 80 percent, which is quit high and adequate results. Some reasons to why the result is so high, could depend on pictures format, where the fruit is placed on a white background. So the model doesn't get any noise from the background of the picture. If we put this against the validation accuracy, where is slighty higher in validation . Overall the model performed well, especially in the last epochs, both for the training and validation set. It even looked like it hasn't toped yet and more epochs could make it better. We used five to be able to compare the models.
+
+## VGG19
 
 You have easily access to pretrained model, in R you simply have to write "application_" and then 10 pretrained models will show, amongst other models also the VGG16 model.
 
-We're using a sequential model, which is a linear stack of layers. First we start by loading the pretrained model. Here there's a lot of options for the model. Here we can apply weights to the ImageNet images. 
+We're using a sequential model, which is a linear stack of layers. First we start by loading the pretrained model. Here there's a lot of options for the model. Here we can apply weights to the ImageNet images. Here we also want to remove the default classifier and attach our own classifier, therefore 'include_top' is set to FALSE. 
 
 ```{r}
-vgg19 = keras::application_resnet50(include_top = FALSE,
-                                       weights = 'imagenet', 
+vgg193 = keras::application_vgg19(include_top = FALSE,
+                                       weights = 'imagenet',
                                        input_shape = c(64, 64 ,3))
 ```
 
-Then you have the possibility to freeze layers. When a layer is frozen, its weights are frozen as well while training. If your current dataset is similar to the one it was freezed on, then it's good to freeze it, otherwise you can train the bottom layers. Here
+Then you have the possibility to freeze layers. When a layer is frozen, its weights are frozen as well while training. If your current dataset is similar to the one it was freezed on, then it's good to freeze it, otherwise you can train the bottom layers. Here our model is trained on ImageNet, therefore we freeze it.
 
 ```{r}
-resnet501 = vgg19
-resnet501 %>% freeze_weights(from = 1, to = 174)
+vgg193 %>% freeze_weights(from = 1, to = 20)
 ```
 
-Then 
+And then turn it into a sequential model.
+
 ```{r}
-summary(resnet50)
+model = keras_model_sequential(vgg193)
 ```
 
+Adn then we add layers to out model. Here we add a flatten layer, which flattens a tensor into one dimension. Then we add a two dense layers. We didn't think any dropout layers were necessarily, mainly because it didn't look like it was overfitting. 
+
 ```{r}
-model = keras_model_sequential(resnet501)
-model1 = keras_model_sequential(resnet501)
+model = model %>% layer_flatten() %>% layer_dense(units = 1024, activation = 'relu') %>% layer_dense(units = 16, activation = "softmax")
 ```
 
+Let's run a summary of the model. 
+
 ```{r}
-model1 = model %>% layer_flatten() %>% layer_dense(units = 1024, activation = 'relu') %>% layer_dropout(0.5)
-model2 = model1 %>% layer_dense(units = 16, activation = "softmax")
+summary(model)
 ```
 
-```{r}
-summary(model2)
-```
-
+Here we can see which layers we applied to the model. Then we can run the 'compile' function for the optimizer, loss and metrics.
 
 ```{r}
-model2 %>% compile(
+model %>% compile(
   optimizer = "adam",
   loss = "categorical_crossentropy",
   metrics = "accuracy"
@@ -241,36 +229,132 @@ model2 %>% compile(
 Now we run the model. 
 
 ```{r}
-history = model2 %>% fit_generator(
+history = model %>% fit_generator(
   train_image_array,
   epochs = 5,
-  steps_per_epoch = 50,
+  steps_per_epoch = 25,
   validation_data = test_image_array,
-  validation_steps = 50
+  validation_steps = 100
 )
 ```
+
+And then we can plot it.
+
+```{r}
+plot(history)
+```
+
+And then the metrics.
 
 ```{r}
 history$metrics
 ```
+
+And the mean value of the validations accuracy and accuracy. 
 
 ```{r}
 mean(history$metrics$accuracy)
 mean(history$metrics$val_accuracy)
 ```
 
+Here the mean accuracy is at 91 percent, which is quiet high and higher than our own trained model. The mean validation accuracy  is even higher at 92 percent. Generally they both performed well, espeically for only five epochs, which even took a long time to run.
 
-Here the valuation accuracy is between 0.90 and 0.94, which is quiet high and higher than our own trained model.
+## ResNet50
+Let's try the exact same thing on a ResNet50 model. We start the same way. Here we add a pooling, here Global Average Pooling.
 
-## Why does the pretrained models perform better?
+```{r}
+resnet50 = keras::application_resnet50(include_top = FALSE,
+                                       weights = 'imagenet',
+                                        pooling = 'avg',
+                                       input_shape = c(64, 64 ,3))
+```
 
-Pretrained models do not necessarily perform better than selftrained model, but they do have an advantage. Pretrained models are a bit like looking at two people, who both have never played football in their life, but one is an athlete and one isn't. As said, none of them know football beforehand, but the athlete does have an advantage and may be better, as he has strength and stamina and is in shape. Pretrained models are already trained 
-
-We also tested the ResNet50 model, but it performed a lot worse than out own model, therefore it is not certain that it will perform better. 
-
-## What have we learned?
-We have learned that simple selftrained model like the CNN model we created in the start. Not could outperform the pretrained model. This could occur from the complexity of the model, which may detect more classifications error then the simple model. None the less we actually saw that the pretrained model gets an higher accuracy on around 10 percentage points, then the selftrained CNN model.
-This is an exiciting topic to dig further in. Due to the pretrained model seems to be more used as a standard procedure.
-And considering that where DL is being used in industries such as. health, finance and retail, etc. Where the impact of a little increase in the accuracy could make big difference.
+```{r}
+summary(resnet50)
+```
 
 
+Here we're freezing a few more layers, as this model has a lot more layers than the last model, the VGG19 model. 
+
+```{r}
+resnet50 = resnet50 %>% freeze_weights(from = 1, to = 176)
+```
+
+Again, we run a sequential model. 
+
+```{r}
+model = keras_model_sequential(resnet50)
+```
+
+Then add some layers. Here we added a dropout layer, because we had problems with overfitting. We even tried to add three dropout layers, but unfortunately it didn't remove the problem. We'll comment on that in the results. 
+
+```{r}
+model = model %>% layer_flatten() %>% layer_dense(units = 1024, activation = 'relu') %>% layer_dropout(0.5) %>% layer_dense(units = 16, activation = "softmax")
+```
+
+And set up the compile function
+
+```{r}
+model %>% compile(
+  optimizer = "adam",
+  loss = "categorical_crossentropy",
+  metrics = "accuracy"
+)
+```
+
+Now we run the model. 
+
+```{r}
+history = model %>% fit_generator(
+  train_image_array,
+  epochs = 5,
+  steps_per_epoch = 25,
+  validation_data = test_image_array,
+  validation_steps = 100
+)
+```
+
+Then a plot.
+
+```{r}
+plot(history)
+```
+
+And then let's run the metrics. 
+
+```{r}
+history$metrics
+```
+
+Adn the mean values.
+
+```{r}
+mean(history$metrics$accuracy)
+mean(history$metrics$val_accuracy)
+```
+
+Here the accuracy is quiet high, even performing better than the VGG19 model in mean and the last epoch. Unfortunately for this model, the validation accuracy is quiet low, which means that out model performs badly on our test data. We have tried to add dropout in our model - even though it's late in the model after the ResNet50 model. We have also tried reducing the trainable parameters, but we cannot remove the overfitting problem for the validaton data unfortunately. Maybe if we had more time to look at it, we could find a soluton, but not for now.
+
+#What have we learned?
+
+Why does pretrained models perform better? Well, pretrained models do not necessarily perform better than selftrained model, but they do have an advantage. Pretrained models are a bit like looking at two people, who both have never played football in their life, but one is an athlete and one isn't. As said, none of them know football beforehand, but the athlete does have an advantage and may be better, as he has strength and stamina and is in shape. Pretrained models are already trained and this may help them perform better, but it isn't always the case. 
+
+Deep learning is being used in industries like health and finance, where the impact of a little increase in the accuracy could make big difference. This is an exiciting topic to dig further in, beacuse the pretrained model seems to be more used as a standard procedure. 
+
+We used a simple CNN, a VGG19 and a ResNet50 model all with five epochs. Generally they all performed quiet well on the dataset, maybe because it was a fairly easy dataset wthout any background 'noise' or something alike. Both the ResNet50 and VGG19 performed better on the training set, maybe do to the fact that they are more complex, but the validation results were quiet alike for VGG19 and our simple CNN, which is quiet interesting. 
+
+The ResNet50 has its problems. The accuracy performs good, but unfortunately the validations accuracy does not perform very well, maybe do to overfitting. Maybe from being to complex for the data or from out data being too simple for such a complex model. This could occur from the complexity of the model, which may detect more classifications error than in the simple model.
+
+We have learned that simple selftrained model like the CNN model we created in the start did perform almost just as well as the pretrained models. With more epochs and steps in epochs the pretrained models may have performed better, but for now it looks very much alike. 
+
+# References
+
+[1] Verma, Shiva: A Simple Guide to Using Keras Pretrained Models: https://towardsdatascience.com/step-by-step-guide-to-using-pretrained-models-in-keras-c9097b647b29
+
+[2] Brownlee, Jason: How to Use The Pre-Trained VGG model to Classify Objects in Photographs: https://machinelearningmastery.com/use-pre-trained-vgg-model-classify-objects-photographs/
+
+[3] Dwivedi, Priya: Understanding and Coding a ResNet in Keras: https://towardsdatascience.com/understanding-and-coding-a-resnet-in-keras-446d7ff84d33
+
+[4] Seif, George: Transfer Learning for Image Classification using Keras: https://towardsdatascience.com/transfer-learning-for-image-classification-using-keras-c47ccf09c8c8
+
+[5] Avinash: Pre-Trained Machine Learning Models vs Models Trained from Scratch: https://heartbeat.fritz.ai/@theimgclist
